@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Role Based App</title>
+    <style>
+        body { font-family: sans-serif; max-width: 800px; margin: auto; padding: 20px; }
+        nav { background: #333; padding: 10px; border-radius: 5px; margin-bottom: 20px; }
+        nav a, nav button { color: white; text-decoration: none; margin-right: 15px; }
+        .msg { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        form p { margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{% url 'post_list' %}">🏠 Home</a>
+        {% if user.is_authenticated %}
+            {% if user.role == 'director' or user.role == 'staff' %}
+                <a href="{% url 'post_create' %}">➕ New Post</a>
+            {% endif %}
+            <span>👤 {{ user.username }} ({{ user.role }})</span>
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">🔑 Login</a>
+             <a href="{% url 'register' %}">📝 Register</a>
+        {% endif %}
+    </nav>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="msg {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</body>
+</html>

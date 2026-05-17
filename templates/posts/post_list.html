@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>📄 All Posts</h2>
+{% for post in posts %}
+    <div style="border:1px solid #ccc; padding:15px; margin:10px 0; border-radius:5px;">
+        <h3><a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a></h3>
+        <p>By: <strong>{{ post.author.username }}</strong> | {{ post.created_at|date:"M d, Y H:i" }}</p>
+        
+        {% if user.role == 'director' %}
+            <a href="{% url 'post_update' post.pk %}">✏️ Edit</a> |
+            <a href="{% url 'post_delete' post.pk %}">🗑️ Delete</a>
+        {% elif user.role == 'staff' and post.author == user %}
+            <a href="{% url 'post_update' post.pk %}">✏️ Edit</a> |
+            <a href="{% url 'post_delete' post.pk %}">🗑️ Delete</a>
+        {% elif user.role == 'manager' %}
+            <em>(Read Only)</em>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>No posts yet.</p>
+{% endfor %}
+{% endblock %}
